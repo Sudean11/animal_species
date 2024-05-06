@@ -1,59 +1,90 @@
 package com.example.myapplication
 
+import AnimalAdapter
+import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [animalDetailsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+import android.widget.EditText
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
+import com.example.myapplication.database.AnimalDatabase
+import com.example.myapplication.model.Animal
+import com.example.myapplication.viewModel.AnimalViewModel
+import com.example.myapplication.viewModel.ViewModelFactory
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 class animalDetailsFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_animal_details, container, false)
+        val view =  inflater.inflate(R.layout.fragment_animal_details, container, false)
+
+        val applicationContext = requireContext().applicationContext
+        val db =
+            Room.databaseBuilder(
+                applicationContext,
+                AnimalDatabase::class.java, "database-name"
+            ).build()
+
+        val animalDao = db.animalDao();
+        val animalViewModelFactory = ViewModelFactory(animalDao)
+        val viewModel = ViewModelProvider(this, animalViewModelFactory).get(AnimalViewModel::class.java)
+
+        val adapter = AnimalAdapter()
+
+        // RecyclerView setup
+        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        // Observe LiveData from ViewModel
+        viewModel.getAllAnimals().observe(viewLifecycleOwner, { animals ->
+            adapter.submitList(animals)
+        })
+
+        // Floating Action Button setup
+        val fab = view.findViewById<FloatingActionButton>(R.id.fab)
+        fab.setOnClickListener {
+            context?.let { it1 -> showInputDialog(it1, viewModel) }
+        }
+        return view;
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment animalDetailsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            animalDetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    fun showInputDialog(context: Context, viewModel: AnimalViewModel) {
+        val alertDialogBuilder = AlertDialog.Builder(context)
+        alertDialogBuilder.setTitle("Enter Details")
+
+        // Inflate the layout containing the input fields
+        val inflater = LayoutInflater.from(context)
+        val dialogLayout = inflater.inflate(R.layout.dialog_input, null)
+
+        // Find the EditText fields from the inflated layout
+        val inputName = dialogLayout.findViewById<EditText>(R.id.input_name)
+        val inputHabitat = dialogLayout.findViewById<EditText>(R.id.input_habitat)
+        val inputDiet = dialogLayout.findViewById<EditText>(R.id.input_diet)
+
+        alertDialogBuilder.setView(dialogLayout)
+
+        alertDialogBuilder.setPositiveButton("OK") { _, _ ->
+            val name = inputName.text.toString()
+            val habitat = inputHabitat.text.toString()
+            val diet = inputDiet.text.toString()
+            val animal = Animal(name = name, habitat = habitat, diet = diet)
+            viewModel.insertAnimal(animal)
+        }
+
+        alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.cancel()
+        }
+
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
     }
 }

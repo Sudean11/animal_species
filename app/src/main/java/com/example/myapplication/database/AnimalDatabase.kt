@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.myapplication.dao.AnimalDao
+import com.example.myapplication.dao.SpeciesDao
 import com.example.myapplication.model.Animal
 import com.example.myapplication.model.Species
 
@@ -12,6 +13,8 @@ import com.example.myapplication.model.Species
 abstract class AnimalDatabase : RoomDatabase() {
 
     abstract fun animalDao(): AnimalDao
+
+    abstract  fun speciesDao(): SpeciesDao
 
 //    companion object {
 //        private var INSTANCE: AnimalDatabase? = null
