@@ -34,7 +34,7 @@ class animalDetailsFragment : Fragment() {
         val db =
             Room.databaseBuilder(
                 applicationContext,
-                AnimalDatabase::class.java, "santosh-db"
+                AnimalDatabase::class.java, "santosh-db1"
             ).build()
 
         val animalDao = db.animalDao();
@@ -86,7 +86,7 @@ class animalDetailsFragment : Fragment() {
 
             if (name.isBlank() || habitat.isBlank() || diet.isBlank()) {
                 Toast.makeText(context, "Please fill all the details", Toast.LENGTH_LONG).show()
-            } else if (!name.matches(nameRegex) || !habitat.matches(habitatRegex) || diet.matches(nameRegex)) {
+            } else if (!name.matches(nameRegex) || !habitat.matches(habitatRegex) || !diet.matches(nameRegex)) {
                 Toast.makeText(context, "Name, Habitat and Diet should contain only letters", Toast.LENGTH_LONG).show()
             } else {
                 val animal = Animal(name = name, habitat = habitat, diet = diet)
