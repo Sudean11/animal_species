@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,12 +34,13 @@ class speciesDetailsFragment : Fragment() {
 //        (activity as AppCompatActivity).supportActionBar?.title = "Species Detail"
 //        activity.supportA
         (activity as? AppCompatActivity)?.supportActionBar?.title = "Species Details"
+        (activity as? AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val applicationContext = requireContext().applicationContext
         val db =
             Room.databaseBuilder(
                 applicationContext,
-                AnimalDatabase::class.java, "database-name"
+                AnimalDatabase::class.java, "santosh-db"
             ).build()
 
         val speciesDao = db.speciesDao();
@@ -84,7 +86,16 @@ class speciesDetailsFragment : Fragment() {
             val name = inputName.text.toString()
             val habitat = inputHabitat.text.toString()
             val animal = Species(name = name, description = habitat)
-            viewModel.insertSpecies(animal)
+            val nameRegex = Regex("^[a-zA-Z ]+\$")
+            val habitatRegex = Regex("^[a-zA-Z ]+\$")
+
+            if (name.isBlank() || habitat.isBlank()) {
+                Toast.makeText(context, "Please fill all the details", Toast.LENGTH_LONG).show()
+            } else if (!name.matches(nameRegex) || !habitat.matches(habitatRegex)) {
+                Toast.makeText(context, "Name and Description should contain only letters", Toast.LENGTH_LONG).show()
+            } else {
+                viewModel.insertSpecies(animal)
+            }
         }
 
         alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->

@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,13 +27,14 @@ class animalDetailsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_animal_details, container, false)
+        (activity as? AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         (activity as? AppCompatActivity)?.supportActionBar?.title = "Animal Details"
         val applicationContext = requireContext().applicationContext
         val db =
             Room.databaseBuilder(
                 applicationContext,
-                AnimalDatabase::class.java, "database-name"
+                AnimalDatabase::class.java, "santosh-db"
             ).build()
 
         val animalDao = db.animalDao();
@@ -78,8 +80,18 @@ class animalDetailsFragment : Fragment() {
             val name = inputName.text.toString()
             val habitat = inputHabitat.text.toString()
             val diet = inputDiet.text.toString()
-            val animal = Animal(name = name, habitat = habitat, diet = diet)
-            viewModel.insertAnimal(animal)
+
+            val nameRegex = Regex("^[a-zA-Z ]+\$")
+            val habitatRegex = Regex("^[a-zA-Z ]+\$")
+
+            if (name.isBlank() || habitat.isBlank() || diet.isBlank()) {
+                Toast.makeText(context, "Please fill all the details", Toast.LENGTH_LONG).show()
+            } else if (!name.matches(nameRegex) || !habitat.matches(habitatRegex) || diet.matches(nameRegex)) {
+                Toast.makeText(context, "Name, Habitat and Diet should contain only letters", Toast.LENGTH_LONG).show()
+            } else {
+                val animal = Animal(name = name, habitat = habitat, diet = diet)
+                viewModel.insertAnimal(animal)
+            }
         }
 
         alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
