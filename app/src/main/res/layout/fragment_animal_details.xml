@@ -19,10 +19,11 @@
     <!-- Floating action button to add a new animal -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_launcher_background"
+        android:src="@drawable/plus_img"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

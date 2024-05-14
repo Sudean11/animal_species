@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +27,7 @@ class animalDetailsFragment : Fragment() {
         // Inflate the layout for this fragment
         val view =  inflater.inflate(R.layout.fragment_animal_details, container, false)
 
+        (activity as? AppCompatActivity)?.supportActionBar?.title = "Animal Details"
         val applicationContext = requireContext().applicationContext
         val db =
             Room.databaseBuilder(
@@ -59,7 +61,7 @@ class animalDetailsFragment : Fragment() {
 
     fun showInputDialog(context: Context, viewModel: AnimalViewModel) {
         val alertDialogBuilder = AlertDialog.Builder(context)
-        alertDialogBuilder.setTitle("Enter Details")
+        alertDialogBuilder.setTitle("Add Animal")
 
         // Inflate the layout containing the input fields
         val inflater = LayoutInflater.from(context)

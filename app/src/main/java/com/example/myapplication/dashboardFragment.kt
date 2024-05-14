@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toolbar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
@@ -31,7 +33,12 @@ class dashboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+
+
+
+
         val view =  inflater.inflate(R.layout.fragment_dashboard, container, false)
+
         val buttonAnimal: Button = view.findViewById(R.id.animal_button);
         val buttonSpecies: Button = view.findViewById(R.id.species_button);
         buttonAnimal.setOnClickListener {
